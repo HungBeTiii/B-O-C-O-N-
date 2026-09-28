@@ -1,0 +1,246 @@
+{
+  "categories": [
+    {
+      "_id": "3b783d86-2d43-4020-b4f8-22b1a6abd085",
+      "name": "Mì trộn",
+      "description": "Các món mì trộn Indomie",
+      "createdAt": "2026-09-22T16:12:57.121Z",
+      "updatedAt": "2026-09-22T16:12:57.121Z"
+    },
+    {
+      "_id": "e35f0529-bec1-449c-b4cd-62bd8e158b3f",
+      "name": "Ăn vặt",
+      "description": "Các món viên chiên và đồ ăn vặt",
+      "createdAt": "2026-09-22T16:12:57.121Z",
+      "updatedAt": "2026-09-22T16:12:57.121Z"
+    },
+    {
+      "_id": "c6e5df4a-7d4d-4816-bf71-190f8aaad5d5",
+      "name": "Đồ uống",
+      "description": "Các loại nước uống",
+      "createdAt": "2026-09-22T16:12:57.121Z",
+      "updatedAt": "2026-09-22T16:12:57.121Z"
+    },
+    {
+      "_id": "765f8287-99e8-40d1-b505-81a9a7b92530",
+      "name": "Combo",
+      "description": "Combo món ăn kèm nước",
+      "createdAt": "2026-09-22T16:12:57.121Z",
+      "updatedAt": "2026-09-22T16:12:57.121Z"
+    }
+  ],
+  "products": [
+    {
+      "_id": "690efb3f-cf0f-4067-809c-08fdafd88e68",
+      "name": "Mì trộn Indomie 1 gói",
+      "description": "Mì trộn đậm vị kèm topping",
+      "image": "",
+      "price": 30000,
+      "costPrice": 11140,
+      "categoryId": "3b783d86-2d43-4020-b4f8-22b1a6abd085",
+      "status": "available",
+      "createdAt": "2026-09-22T16:12:57.121Z",
+      "updatedAt": "2026-09-22T16:12:57.121Z"
+    },
+    {
+      "_id": "c5f49059-e3bb-4997-a70c-587c31c7d93d",
+      "name": "Mì trộn Indomie 2 gói",
+      "description": "Phần 2 gói dành cho người ăn khỏe",
+      "image": "",
+      "price": 35000,
+      "costPrice": 14540,
+      "categoryId": "3b783d86-2d43-4020-b4f8-22b1a6abd085",
+      "status": "available",
+      "createdAt": "2026-09-22T16:12:57.121Z",
+      "updatedAt": "2026-09-22T16:12:57.121Z"
+    },
+    {
+      "_id": "662d21b7-0a87-4164-8278-98cb4c797207",
+      "name": "Viên chiên xào mắm tỏi",
+      "description": "Viên chiên xào sốt mắm tỏi thơm đậm",
+      "image": "",
+      "price": 35000,
+      "costPrice": 17940,
+      "categoryId": "e35f0529-bec1-449c-b4cd-62bd8e158b3f",
+      "status": "available",
+      "createdAt": "2026-09-22T16:12:57.121Z",
+      "updatedAt": "2026-09-22T16:12:57.121Z"
+    },
+    {
+      "_id": "ce522a59-2e91-417b-bd98-40dde20e275d",
+      "name": "Trà tắc",
+      "description": "Trà tắc chua ngọt mát lạnh",
+      "image": "",
+      "price": 15000,
+      "costPrice": 6000,
+      "categoryId": "c6e5df4a-7d4d-4816-bf71-190f8aaad5d5",
+      "status": "available",
+      "createdAt": "2026-09-22T16:12:57.121Z",
+      "updatedAt": "2026-09-22T16:12:57.121Z"
+    },
+    {
+      "_id": "45704146-6252-40e7-9555-50ded3ceab8d",
+      "name": "Combo Mì + Trà tắc",
+      "description": "Mì trộn 1 gói kèm trà tắc",
+      "image": "",
+      "price": 42000,
+      "costPrice": 17140,
+      "categoryId": "765f8287-99e8-40d1-b505-81a9a7b92530",
+      "status": "available",
+      "createdAt": "2026-09-22T16:12:57.121Z",
+      "updatedAt": "2026-09-22T16:12:57.121Z"
+    },
+    {
+      "_id": "7b1fbda5-dd30-45f1-8b42-9d101f2cd4fb",
+      "name": "Combo Viên + Trà tắc",
+      "description": "Viên chiên mắm tỏi kèm trà tắc",
+      "image": "",
+      "price": 47000,
+      "costPrice": 23940,
+      "categoryId": "765f8287-99e8-40d1-b505-81a9a7b92530",
+      "status": "available",
+      "createdAt": "2026-09-22T16:12:57.121Z",
+      "updatedAt": "2026-09-22T16:12:57.121Z"
+    }
+  ],
+  "orders": [
+    {
+      "_id": "52c4ba21-e95e-4023-9607-edb21c61831e",
+      "orderCode": "MCX-260928-2833",
+      "customerName": "NamNam",
+      "phone": "0975416840",
+      "address": "640 đường láng",
+      "latitude": 21.01451055748016,
+      "longitude": 105.8062088266446,
+      "note": "cho thêm tương ớt để chấm riêng",
+      "products": [
+        {
+          "productId": "690efb3f-cf0f-4067-809c-08fdafd88e68",
+          "name": "Mì trộn Indomie 1 gói",
+          "quantity": 1,
+          "priceAtPurchase": 30000,
+          "costPriceAtPurchase": 11140,
+          "subtotal": 30000,
+          "costSubtotal": 11140
+        },
+        {
+          "productId": "662d21b7-0a87-4164-8278-98cb4c797207",
+          "name": "Viên chiên xào mắm tỏi",
+          "quantity": 1,
+          "priceAtPurchase": 35000,
+          "costPriceAtPurchase": 17940,
+          "subtotal": 35000,
+          "costSubtotal": 17940
+        },
+        {
+          "productId": "ce522a59-2e91-417b-bd98-40dde20e275d",
+          "name": "Trà tắc",
+          "quantity": 1,
+          "priceAtPurchase": 15000,
+          "costPriceAtPurchase": 6000,
+          "subtotal": 15000,
+          "costSubtotal": 6000
+        }
+      ],
+      "totalPrice": 80000,
+      "totalCost": 35080,
+      "paymentMethod": "bank",
+      "paymentStatus": "Đã thanh toán",
+      "orderStatus": "Hoàn thành",
+      "createdAt": "2026-09-28T10:03:10.454Z",
+      "updatedAt": "2026-09-28T10:04:58.440Z"
+    },
+    {
+      "_id": "a6f7cd6f-46d8-4ace-9934-f0c120e9391d",
+      "orderCode": "MCX-260922-3602",
+      "customerName": "Nguyễn Văn Hùng",
+      "phone": "0975417970",
+      "address": "640 đường láng",
+      "latitude": 21.01446766839507,
+      "longitude": 105.80645850410671,
+      "note": "mì k cay",
+      "products": [
+        {
+          "productId": "690efb3f-cf0f-4067-809c-08fdafd88e68",
+          "name": "Mì trộn Indomie 1 gói",
+          "quantity": 1,
+          "priceAtPurchase": 30000,
+          "costPriceAtPurchase": 11140,
+          "subtotal": 30000,
+          "costSubtotal": 11140
+        },
+        {
+          "productId": "662d21b7-0a87-4164-8278-98cb4c797207",
+          "name": "Viên chiên xào mắm tỏi",
+          "quantity": 1,
+          "priceAtPurchase": 35000,
+          "costPriceAtPurchase": 17940,
+          "subtotal": 35000,
+          "costSubtotal": 17940
+        },
+        {
+          "productId": "ce522a59-2e91-417b-bd98-40dde20e275d",
+          "name": "Trà tắc",
+          "quantity": 1,
+          "priceAtPurchase": 15000,
+          "costPriceAtPurchase": 6000,
+          "subtotal": 15000,
+          "costSubtotal": 6000
+        }
+      ],
+      "totalPrice": 80000,
+      "totalCost": 35080,
+      "paymentMethod": "cash",
+      "paymentStatus": "Đã thanh toán",
+      "orderStatus": "Hoàn thành",
+      "createdAt": "2026-09-22T16:14:15.381Z",
+      "updatedAt": "2026-09-22T16:15:17.756Z"
+    },
+    {
+      "_id": "1fd02540-1ce6-400e-8793-c9b788f8b6ce",
+      "orderCode": "MCX-DEMO-0001",
+      "customerName": "Khách demo",
+      "phone": "0900000000",
+      "address": "Đường Láng, Đống Đa, Hà Nội",
+      "latitude": 21.0235,
+      "longitude": 105.8156,
+      "note": "Đơn mẫu để trình diễn",
+      "products": [
+        {
+          "productId": "690efb3f-cf0f-4067-809c-08fdafd88e68",
+          "name": "Mì trộn Indomie 1 gói",
+          "quantity": 1,
+          "priceAtPurchase": 30000,
+          "costPriceAtPurchase": 11140,
+          "subtotal": 30000,
+          "costSubtotal": 11140
+        },
+        {
+          "productId": "ce522a59-2e91-417b-bd98-40dde20e275d",
+          "name": "Trà tắc",
+          "quantity": 1,
+          "priceAtPurchase": 15000,
+          "costPriceAtPurchase": 6000,
+          "subtotal": 15000,
+          "costSubtotal": 6000
+        }
+      ],
+      "totalPrice": 45000,
+      "totalCost": 17140,
+      "paymentMethod": "cash",
+      "paymentStatus": "Đã thanh toán",
+      "orderStatus": "Hoàn thành",
+      "createdAt": "2026-09-21T16:12:57.189Z",
+      "updatedAt": "2026-09-21T16:12:57.189Z"
+    }
+  ],
+  "admins": [
+    {
+      "_id": "18056828-3215-4e8d-94ec-e484e7ddb9d5",
+      "username": "admin",
+      "passwordHash": "$2a$10$KfAKzy3FFqeOgvSm.kdo..2daC9P96fV1mhfCODr.iQxO.La5omPu",
+      "createdAt": "2026-09-22T16:12:57.189Z",
+      "updatedAt": "2026-09-22T16:12:57.189Z"
+    }
+  ]
+}
