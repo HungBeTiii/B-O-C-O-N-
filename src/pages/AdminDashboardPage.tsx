@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Banknote, PackageCheck, ReceiptText, TrendingUp, Clock3 } from 'lucide-react'
+import { Banknote, PackageCheck, ReceiptText, TrendingUp, Clock3, Star } from 'lucide-react'
 import { api } from '../lib/api'
 import type { Stats } from '../lib/types'
 import { ErrorBox, LoadingBlock } from '../components/Ui'
@@ -37,14 +37,15 @@ function Dashboard({ stats }: { stats: Stats }) {
     { Icon: ReceiptText, label: 'Tổng đơn', value: stats.totalOrders, suffix: '' },
     { Icon: Clock3, label: 'Đơn đang xử lý', value: stats.pendingOrders, suffix: '' },
     { Icon: PackageCheck, label: 'Giá vốn', value: stats.cost, suffix: 'đ' },
-    { Icon: TrendingUp, label: 'Lợi nhuận', value: stats.profit, suffix: 'đ' }
+    { Icon: TrendingUp, label: 'Lợi nhuận', value: stats.profit, suffix: 'đ' },
+    { Icon: Star, label: 'Đánh giá TB', value: Number(stats.averageRating || 0).toFixed(1), suffix: '/5' }
   ]
   const days = Array.isArray(stats.byDay) ? stats.byDay : []
   const max = Math.max(...days.map(x => Number(x.revenue || 0)), 1)
   const best = Array.isArray(stats.bestSellers) ? stats.bestSellers : []
 
   return <>
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
       {cards.map(({ Icon, label, value, suffix }) => <div key={label} className="rounded-2xl border bg-white p-5"><div className="flex items-center justify-between"><div className="text-sm font-bold text-slate-500">{label}</div><Icon className="text-orange-500" size={20}/></div><div className="mt-3 text-2xl font-black">{Number(value || 0).toLocaleString('vi-VN')}{suffix}</div></div>)}
     </div>
     <div className="mt-6 grid gap-6 xl:grid-cols-[1fr_360px]">

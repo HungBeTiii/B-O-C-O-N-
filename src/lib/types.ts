@@ -19,9 +19,31 @@ export type Product = {
   updatedAt?: string
 }
 
+export type Addon = {
+  _id: string
+  name: string
+  price: number
+  costPrice: number
+  status: 'available' | 'soldout'
+  createdAt?: string
+  updatedAt?: string
+}
+
 export type CartItem = {
+  cartItemId: string
   product: Product
+  addons: Addon[]
   quantity: number
+}
+
+export type OrderAddon = {
+  addonId: string
+  name: string
+  quantity: number
+  priceAtPurchase: number
+  costPriceAtPurchase: number
+  subtotal: number
+  costSubtotal?: number
 }
 
 export type OrderItem = {
@@ -30,6 +52,7 @@ export type OrderItem = {
   quantity: number
   priceAtPurchase: number
   costPriceAtPurchase: number
+  addons?: OrderAddon[]
   subtotal: number
   costSubtotal?: number
 }
@@ -53,6 +76,18 @@ export type Order = {
   updatedAt?: string
 }
 
+export type Review = {
+  _id: string
+  orderId?: string
+  orderCode?: string
+  customerName: string
+  phone?: string
+  rating: number
+  comment: string
+  createdAt?: string
+  updatedAt?: string
+}
+
 export type Stats = {
   totalOrders: number
   completedOrders: number
@@ -60,6 +95,8 @@ export type Stats = {
   revenue: number
   cost: number
   profit: number
+  reviewCount?: number
+  averageRating?: number
   byDay: { date: string; revenue: number; profit: number }[]
   bestSellers: { name: string; quantity: number }[]
 }

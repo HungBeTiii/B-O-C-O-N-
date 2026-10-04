@@ -70,7 +70,7 @@ export default function CheckoutPage() {
         ...form,
         latitude: position[0],
         longitude: position[1],
-        products: items.map(item => ({ productId: item.product._id, quantity: item.quantity }))
+        products: items.map(item => ({ productId: item.product._id, quantity: item.quantity, addons: (item.addons || []).map(addon => ({ addonId: addon._id, quantity: 1 })) }))
       })
       clear()
       navigate('/track?code=' + encodeURIComponent(order.orderCode), { state: { justCreated: true } })

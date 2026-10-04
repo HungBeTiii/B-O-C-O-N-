@@ -26,7 +26,7 @@ async function request(path: string, options: RequestInit = {}) {
       }
     })
   } catch {
-    throw new ApiError('Không kết nối được máy chủ API. Hãy kiểm tra cửa sổ npm run dev.', 0)
+    throw new ApiError('Không kết nối được máy chủ API. Hãy chạy START_PROJECT.bat hoặc npm run dev.', 0)
   }
 
   const text = await response.text()
@@ -47,6 +47,9 @@ export const api = {
   products: () => request('/products'),
   product: (id: string) => request('/products/' + encodeURIComponent(id)),
   categories: () => request('/categories'),
+  addons: () => request('/addons'),
+  reviews: () => request('/reviews'),
+  createReview: (body: any) => request('/reviews', { method: 'POST', body: JSON.stringify(body) }),
   createOrder: (body: any) => request('/orders', { method: 'POST', body: JSON.stringify(body) }),
   trackOrder: (id: string) => request('/orders/track/' + encodeURIComponent(id)),
   login: (body: any) => request('/admin/login', { method: 'POST', body: JSON.stringify(body) }),
@@ -59,5 +62,10 @@ export const api = {
   deleteProduct: (id: string) => request('/products/' + encodeURIComponent(id), { method: 'DELETE' }),
   createCategory: (body: any) => request('/categories', { method: 'POST', body: JSON.stringify(body) }),
   updateCategory: (id: string, body: any) => request('/categories/' + encodeURIComponent(id), { method: 'PUT', body: JSON.stringify(body) }),
-  deleteCategory: (id: string) => request('/categories/' + encodeURIComponent(id), { method: 'DELETE' })
+  deleteCategory: (id: string) => request('/categories/' + encodeURIComponent(id), { method: 'DELETE' }),
+  createAddon: (body: any) => request('/addons', { method: 'POST', body: JSON.stringify(body) }),
+  updateAddon: (id: string, body: any) => request('/addons/' + encodeURIComponent(id), { method: 'PUT', body: JSON.stringify(body) }),
+  deleteAddon: (id: string) => request('/addons/' + encodeURIComponent(id), { method: 'DELETE' }),
+  adminReviews: () => request('/admin/reviews'),
+  deleteReview: (id: string) => request('/reviews/' + encodeURIComponent(id), { method: 'DELETE' })
 }

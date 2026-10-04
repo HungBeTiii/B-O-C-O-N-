@@ -1,11 +1,13 @@
-import { LayoutDashboard, ReceiptText, Utensils, LogOut, Tags, Store, ExternalLink } from 'lucide-react'
+import { LayoutDashboard, ReceiptText, Utensils, LogOut, Tags, Store, ExternalLink, CirclePlus, Star } from 'lucide-react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 
 const nav = [
   ['/admin', LayoutDashboard, 'Tổng quan'],
   ['/admin/orders', ReceiptText, 'Đơn hàng'],
   ['/admin/products', Utensils, 'Món ăn'],
-  ['/admin/categories', Tags, 'Danh mục']
+  ['/admin/categories', Tags, 'Danh mục'],
+  ['/admin/addons', CirclePlus, 'Đồ thêm'],
+  ['/admin/reviews', Star, 'Đánh giá']
 ] as const
 
 export default function AdminLayout() {

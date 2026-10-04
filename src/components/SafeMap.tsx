@@ -122,13 +122,13 @@ export function MapPicker({
         >
           <MapSizer target={value}/>
           <TileLayer
-            attribution='&copy; OpenStreetMap contributors'
-            url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-            eventHandlers={{
-              tileerror() { setTileError(true) },
-              load() { setTileError(false) }
-            }}
-          />
+  attribution='Tiles &copy; Esri'
+  url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+  eventHandlers={{
+    tileerror() { setTileError(true) },
+    load() { setTileError(false) }
+  }}
+/>
           <PickerEvents value={value} onChange={onChange} accuracy={accuracy}/>
         </MapContainer>
 
@@ -158,13 +158,13 @@ export function LocationMap({ latitude, longitude }: { latitude: number; longitu
         <MapContainer center={center} zoom={17} scrollWheelZoom style={{ height: '100%', width: '100%' }}>
           <MapSizer target={center}/>
           <TileLayer
-            attribution='&copy; OpenStreetMap contributors'
-            url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-            eventHandlers={{
-              tileerror() { setTileError(true) },
-              load() { setTileError(false) }
-            }}
-          />
+  attribution='Tiles &copy; Esri'
+  url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+  eventHandlers={{
+    tileerror() { setTileError(true) },
+    load() { setTileError(false) }
+  }}
+/>
           <Marker position={center} icon={pinIcon}/>
         </MapContainer>
 

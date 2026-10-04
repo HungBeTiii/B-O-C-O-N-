@@ -1,4 +1,4 @@
-import { MapPinned, ShoppingCart, Shield } from 'lucide-react'
+import { MapPinned, ShoppingCart, Shield, Star } from 'lucide-react'
 import { Link, NavLink } from 'react-router-dom'
 import { useCart } from '../lib/cart'
 
@@ -10,6 +10,7 @@ export default function CustomerHeader() {
       <nav className="hidden items-center gap-6 text-sm font-semibold md:flex">
         <NavLink to="/" className="hover:text-orange-600">Thực đơn</NavLink>
         <NavLink to="/track" className="flex items-center gap-1 hover:text-orange-600"><MapPinned size={16}/>Theo dõi đơn</NavLink>
+        <NavLink to="/review" className="flex items-center gap-1 hover:text-orange-600"><Star size={16}/>Đánh giá</NavLink>
         <NavLink to="/admin/login" className="flex items-center gap-1 text-slate-500 hover:text-orange-600"><Shield size={15}/>Quản trị</NavLink>
       </nav>
       <Link to="/cart" className="relative flex items-center gap-2 rounded-xl border border-orange-200 px-3 py-2 font-bold text-orange-600 hover:bg-orange-50">

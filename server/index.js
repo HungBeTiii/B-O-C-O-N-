@@ -12,6 +12,7 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const DATA_FILE = path.resolve(__dirname, '../data/demo-db.json')
+const DIST_DIR = path.resolve(__dirname, '../dist')
 
 const app = express()
 app.use(cors())
@@ -39,12 +40,30 @@ const productSchema = new mongoose.Schema({
   status: { type: String, enum: ['available','soldout'], default: 'available' }
 }, { timestamps: true })
 
+const addonSchema = new mongoose.Schema({
+  name: { type: String, required: true, trim: true },
+  price: { type: Number, required: true, min: 0 },
+  costPrice: { type: Number, default: 0, min: 0 },
+  status: { type: String, enum: ['available','soldout'], default: 'available' }
+}, { timestamps: true })
+
+const addonSnapshotSchema = new mongoose.Schema({
+  addonId: String,
+  name: String,
+  quantity: Number,
+  priceAtPurchase: Number,
+  costPriceAtPurchase: Number,
+  subtotal: Number,
+  costSubtotal: Number
+}, { _id: false })
+
 const orderItemSchema = new mongoose.Schema({
   productId: String,
   name: String,
   quantity: Number,
   priceAtPurchase: Number,
   costPriceAtPurchase: Number,
+  addons: { type: [addonSnapshotSchema], default: [] },
   subtotal: Number,
   costSubtotal: Number
 }, { _id: false })
@@ -70,13 +89,24 @@ const adminSchema = new mongoose.Schema({
   passwordHash: String
 }, { timestamps: true })
 
+const reviewSchema = new mongoose.Schema({
+  orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order', required: true, unique: true, index: true },
+  orderCode: { type: String, required: true, index: true },
+  customerName: { type: String, required: true },
+  phone: { type: String, required: true },
+  rating: { type: Number, required: true, min: 1, max: 5 },
+  comment: { type: String, default: '', maxlength: 500 }
+}, { timestamps: true })
+
 const Category = mongoose.models.Category || mongoose.model('Category', categorySchema)
 const Product = mongoose.models.Product || mongoose.model('Product', productSchema)
+const Addon = mongoose.models.Addon || mongoose.model('Addon', addonSchema)
 const Order = mongoose.models.Order || mongoose.model('Order', orderSchema)
 const Admin = mongoose.models.Admin || mongoose.model('Admin', adminSchema)
+const Review = mongoose.models.Review || mongoose.model('Review', reviewSchema)
 
 let mode = 'file'
-let store = { categories: [], products: [], orders: [], admins: [] }
+let store = { categories: [], products: [], addons: [], orders: [], admins: [], reviews: [] }
 
 const asyncRoute = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
 const id = () => crypto.randomUUID()
@@ -99,6 +129,20 @@ const productsSeed = [
   { name: 'Combo Viên + Trà tắc', description: 'Viên chiên mắm tỏi kèm trà tắc', price: 47000, costPrice: 23940, cat: 'Combo' }
 ]
 
+const addonsSeed = [
+  { name: 'Mì thêm (1 gói)', price: 7000 },
+  { name: 'Tôm viên (3 viên)', price: 5000 },
+  { name: 'Bò viên (3 viên)', price: 5000 },
+  { name: 'Mực xoắn (2 viên)', price: 5000 },
+  { name: 'Tôm con (2 viên)', price: 5000 },
+  { name: 'Sò điệp (2 viên)', price: 5000 },
+  { name: 'Hải sản phô mai (2 viên)', price: 5000 },
+  { name: 'Xúc xích (1 cái)', price: 7000 },
+  { name: 'Trứng ốp (1 quả)', price: 7000 },
+  { name: 'Đậu hũ phô mai (1 viên)', price: 5000 },
+  { name: 'Viên thả lẩu cam (2 viên)', price: 5000 }
+]
+
 async function persistFile() {
   if (mode !== 'file') return
   await fs.mkdir(path.dirname(DATA_FILE), { recursive: true })
@@ -112,11 +156,13 @@ async function seedFileStore() {
     store = {
       categories: Array.isArray(parsed.categories) ? parsed.categories : [],
       products: Array.isArray(parsed.products) ? parsed.products : [],
+      addons: Array.isArray(parsed.addons) ? parsed.addons : [],
       orders: Array.isArray(parsed.orders) ? parsed.orders : [],
-      admins: Array.isArray(parsed.admins) ? parsed.admins : []
+      admins: Array.isArray(parsed.admins) ? parsed.admins : [],
+      reviews: Array.isArray(parsed.reviews) ? parsed.reviews : []
     }
   } catch {
-    store = { categories: [], products: [], orders: [], admins: [] }
+    store = { categories: [], products: [], addons: [], orders: [], admins: [], reviews: [] }
   }
 
   if (!store.categories.length) {
@@ -139,6 +185,18 @@ async function seedFileStore() {
         updatedAt: now()
       }
     })
+  }
+
+  if (!store.addons.length) {
+    store.addons = addonsSeed.map(a => ({
+      _id: id(),
+      name: a.name,
+      price: a.price,
+      costPrice: 0,
+      status: 'available',
+      createdAt: now(),
+      updatedAt: now()
+    }))
   }
 
   if (!store.admins.length) {
@@ -183,18 +241,27 @@ async function seedFileStore() {
 
 async function seedMongo() {
   if (await Category.countDocuments() === 0) {
-    const cats = await Category.insertMany(catsSeed)
+    await Category.insertMany(catsSeed)
+  }
+
+  if (await Product.countDocuments() === 0) {
+    const cats = await Category.find().lean()
     for (const p of productsSeed) {
       const c = cats.find(x => x.name === p.cat)
+      if (!c) continue
       await Product.create({
         name: p.name,
         description: p.description,
         price: p.price,
         costPrice: p.costPrice,
-        categoryId: c?._id,
+        categoryId: c._id,
         status: 'available'
       })
     }
+  }
+
+  if (await Addon.countDocuments() === 0) {
+    await Addon.insertMany(addonsSeed.map(a => ({ ...a, costPrice: 0, status: 'available' })))
   }
 
   if (await Admin.countDocuments() === 0) {
@@ -206,7 +273,10 @@ async function seedMongo() {
 }
 
 async function connectDataSource() {
-  const uri = clean(process.env.MONGO_URI || '')
+  // Nếu chưa có .env, vẫn tự thử MongoDB local trước; thất bại thì fallback JSON.
+  const uri = clean(process.env.MONGO_URI === undefined
+    ? 'mongodb://127.0.0.1:27017/restaurant_ordering'
+    : process.env.MONGO_URI)
   if (uri) {
     try {
       await mongoose.connect(uri, { serverSelectionTimeoutMS: 2500 })
@@ -267,6 +337,36 @@ function validateProduct(data) {
   if (!Number.isFinite(data.costPrice) || data.costPrice < 0) return 'Giá vốn không hợp lệ'
   if (!data.categoryId) return 'Vui lòng chọn danh mục'
   return ''
+}
+
+function normalizeAddonBody(body) {
+  return {
+    name: clean(body.name || ''),
+    price: Number(body.price),
+    costPrice: Number(body.costPrice || 0),
+    status: body.status === 'soldout' ? 'soldout' : 'available'
+  }
+}
+
+function validateAddon(data) {
+  if (!data.name) return 'Tên đồ thêm không được để trống'
+  if (!Number.isFinite(data.price) || data.price < 0) return 'Giá bán đồ thêm không hợp lệ'
+  if (!Number.isFinite(data.costPrice) || data.costPrice < 0) return 'Giá vốn đồ thêm không hợp lệ'
+  return ''
+}
+
+function normalizePhone(value) {
+  return String(value || '').replace(/\s/g, '')
+}
+
+function publicReview(row) {
+  return {
+    _id: String(row._id),
+    customerName: row.customerName || 'Khách hàng',
+    rating: Number(row.rating || 0),
+    comment: row.comment || '',
+    createdAt: row.createdAt
+  }
 }
 
 app.get('/api/health', (req, res) => {
@@ -400,6 +500,57 @@ app.delete('/api/products/:id', auth, asyncRoute(async (req, res) => {
   res.json({ ok: true })
 }))
 
+app.get('/api/addons', asyncRoute(async (req, res) => {
+  const rows = mode === 'mongo'
+    ? await Addon.find().sort({ createdAt: 1 }).lean()
+    : [...store.addons].sort((a, b) => String(a.createdAt).localeCompare(String(b.createdAt)))
+  res.json(rows)
+}))
+
+app.post('/api/addons', auth, asyncRoute(async (req, res) => {
+  const data = normalizeAddonBody(req.body)
+  const error = validateAddon(data)
+  if (error) return res.status(400).json({ message: error })
+
+  if (mode === 'mongo') return res.status(201).json(await Addon.create(data))
+
+  const row = { _id: id(), ...data, createdAt: now(), updatedAt: now() }
+  store.addons.push(row)
+  await persistFile()
+  res.status(201).json(row)
+}))
+
+app.put('/api/addons/:id', auth, asyncRoute(async (req, res) => {
+  const data = normalizeAddonBody(req.body)
+  const error = validateAddon(data)
+  if (error) return res.status(400).json({ message: error })
+
+  if (mode === 'mongo') {
+    const row = await Addon.findByIdAndUpdate(req.params.id, data, { new: true, runValidators: true })
+    if (!row) return res.status(404).json({ message: 'Không tìm thấy đồ thêm' })
+    return res.json(row)
+  }
+
+  const row = store.addons.find(a => a._id === req.params.id)
+  if (!row) return res.status(404).json({ message: 'Không tìm thấy đồ thêm' })
+  Object.assign(row, data, { updatedAt: now() })
+  await persistFile()
+  res.json(row)
+}))
+
+app.delete('/api/addons/:id', auth, asyncRoute(async (req, res) => {
+  if (mode === 'mongo') {
+    const row = await Addon.findByIdAndDelete(req.params.id)
+    if (!row) return res.status(404).json({ message: 'Không tìm thấy đồ thêm' })
+  } else {
+    const before = store.addons.length
+    store.addons = store.addons.filter(a => a._id !== req.params.id)
+    if (store.addons.length === before) return res.status(404).json({ message: 'Không tìm thấy đồ thêm' })
+    await persistFile()
+  }
+  res.json({ ok: true })
+}))
+
 app.post('/api/orders', asyncRoute(async (req, res) => {
   const customerName = clean(req.body.customerName || '')
   const phone = clean(req.body.phone || '')
@@ -420,14 +571,36 @@ app.post('/api/orders', asyncRoute(async (req, res) => {
       : store.products.find(p => p._id === it.productId)
     if (!product || product.status === 'soldout') return res.status(400).json({ message: 'Có món đã hết hoặc không còn tồn tại. Vui lòng kiểm tra lại giỏ hàng.' })
     const quantity = Math.min(99, Math.max(1, Number(it.quantity || 1)))
+    const inputAddons = Array.isArray(it.addons) ? it.addons : []
+    const addonSnapshots = []
+    for (const selected of inputAddons) {
+      const addon = mode === 'mongo'
+        ? await Addon.findById(selected.addonId).lean()
+        : store.addons.find(a => a._id === selected.addonId)
+      if (!addon || addon.status === 'soldout') return res.status(400).json({ message: 'Có đồ thêm đã hết hoặc không còn tồn tại. Vui lòng kiểm tra lại giỏ hàng.' })
+      const perProduct = Math.min(10, Math.max(1, Number(selected.quantity || 1)))
+      const addonQuantity = perProduct * quantity
+      addonSnapshots.push({
+        addonId: String(addon._id),
+        name: addon.name,
+        quantity: addonQuantity,
+        priceAtPurchase: Number(addon.price || 0),
+        costPriceAtPurchase: Number(addon.costPrice || 0),
+        subtotal: Number(addon.price || 0) * addonQuantity,
+        costSubtotal: Number(addon.costPrice || 0) * addonQuantity
+      })
+    }
+    const addonPrice = addonSnapshots.reduce((sum, addon) => sum + addon.subtotal, 0)
+    const addonCost = addonSnapshots.reduce((sum, addon) => sum + addon.costSubtotal, 0)
     items.push({
       productId: String(product._id),
       name: product.name,
       quantity,
       priceAtPurchase: Number(product.price),
       costPriceAtPurchase: Number(product.costPrice || 0),
-      subtotal: Number(product.price) * quantity,
-      costSubtotal: Number(product.costPrice || 0) * quantity
+      addons: addonSnapshots,
+      subtotal: Number(product.price) * quantity + addonPrice,
+      costSubtotal: Number(product.costPrice || 0) * quantity + addonCost
     })
   }
 
@@ -539,6 +712,62 @@ app.put('/api/orders/:id/status', auth, asyncRoute(async (req, res) => {
   res.json(row)
 }))
 
+app.get('/api/reviews', asyncRoute(async (req, res) => {
+  const rows = mode === 'mongo'
+    ? await Review.find().sort({ createdAt: -1 }).limit(12).lean()
+    : [...store.reviews].sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt))).slice(0, 12)
+  res.json(rows.map(publicReview))
+}))
+
+app.post('/api/reviews', asyncRoute(async (req, res) => {
+  const orderCode = clean(req.body.orderCode || '')
+  const phone = normalizePhone(req.body.phone)
+  const rating = Number(req.body.rating)
+  const comment = clean(req.body.comment || '')
+  if (!orderCode || !phone) return res.status(400).json({ message: 'Vui lòng nhập mã đơn và số điện thoại.' })
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) return res.status(400).json({ message: 'Vui lòng chọn mức đánh giá từ 1 đến 5 sao.' })
+  if (comment.length > 500) return res.status(400).json({ message: 'Nhận xét tối đa 500 ký tự.' })
+
+  const order = mode === 'mongo'
+    ? await Order.findOne({ orderCode }).lean()
+    : store.orders.find(o => o.orderCode === orderCode)
+  if (!order || normalizePhone(order.phone) !== phone) return res.status(404).json({ message: 'Không tìm thấy đơn hàng phù hợp với mã đơn và số điện thoại.' })
+  if (order.orderStatus !== 'Hoàn thành') return res.status(400).json({ message: 'Chỉ có thể đánh giá sau khi đơn hàng đã hoàn thành.' })
+
+  if (mode === 'mongo') {
+    const exists = await Review.exists({ orderId: order._id })
+    if (exists) return res.status(409).json({ message: 'Đơn hàng này đã được đánh giá.' })
+    const row = await Review.create({ orderId: order._id, orderCode, customerName: order.customerName, phone, rating, comment })
+    return res.status(201).json(publicReview(row))
+  }
+
+  if (store.reviews.some(r => r.orderId === order._id)) return res.status(409).json({ message: 'Đơn hàng này đã được đánh giá.' })
+  const row = { _id: id(), orderId: order._id, orderCode, customerName: order.customerName, phone, rating, comment, createdAt: now(), updatedAt: now() }
+  store.reviews.unshift(row)
+  await persistFile()
+  res.status(201).json(publicReview(row))
+}))
+
+app.get('/api/admin/reviews', auth, asyncRoute(async (req, res) => {
+  const rows = mode === 'mongo'
+    ? await Review.find().sort({ createdAt: -1 }).lean()
+    : [...store.reviews].sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)))
+  res.json(rows)
+}))
+
+app.delete('/api/reviews/:id', auth, asyncRoute(async (req, res) => {
+  if (mode === 'mongo') {
+    const row = await Review.findByIdAndDelete(req.params.id)
+    if (!row) return res.status(404).json({ message: 'Không tìm thấy đánh giá' })
+  } else {
+    const before = store.reviews.length
+    store.reviews = store.reviews.filter(r => r._id !== req.params.id)
+    if (store.reviews.length === before) return res.status(404).json({ message: 'Không tìm thấy đánh giá' })
+    await persistFile()
+  }
+  res.json({ ok: true })
+}))
+
 app.post('/api/admin/login', asyncRoute(async (req, res) => {
   const username = clean(req.body.username || '')
   const password = req.body.password || ''
@@ -582,6 +811,10 @@ app.get('/api/statistics', auth, asyncRoute(async (req, res) => {
     .sort((a, b) => Number(b.quantity) - Number(a.quantity))
     .slice(0, 5)
 
+  const reviews = mode === 'mongo' ? await Review.find().lean() : store.reviews
+  const reviewCount = reviews.length
+  const averageRating = reviewCount ? reviews.reduce((sum, review) => sum + Number(review.rating || 0), 0) / reviewCount : 0
+
   res.json({
     totalOrders: rows.length,
     completedOrders: completed.length,
@@ -589,14 +822,33 @@ app.get('/api/statistics', auth, asyncRoute(async (req, res) => {
     revenue,
     cost,
     profit: revenue - cost,
+    reviewCount,
+    averageRating,
     byDay,
     bestSellers
   })
 }))
 
-app.use((req, res) => {
+// Chỉ trả JSON 404 cho đường dẫn API. Các đường dẫn còn lại được giao cho SPA.
+app.use('/api', (req, res) => {
   res.status(404).json({ message: 'API không tồn tại' })
 })
+
+// Chế độ chạy ổn định: Express phục vụ luôn bản Frontend đã build.
+// Nhờ vậy npm run dev chỉ cần một tiến trình và một cổng 3001.
+let frontendReady = false
+try {
+  await fs.access(path.join(DIST_DIR, 'index.html'))
+  frontendReady = true
+  app.use(express.static(DIST_DIR))
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(DIST_DIR, 'index.html'))
+  })
+} catch {
+  app.get('/', (req, res) => {
+    res.status(503).send('Frontend chưa được build. Hãy chạy: npm run build')
+  })
+}
 
 app.use((err, req, res, next) => {
   console.error('API ERROR:', err)
@@ -605,6 +857,17 @@ app.use((err, req, res, next) => {
 })
 
 await connectDataSource()
-app.listen(PORT, '127.0.0.1', () => {
-  console.log(`🚀 API: http://127.0.0.1:${PORT} | mode=${mode}`)
+const server = app.listen(PORT, '127.0.0.1', () => {
+  console.log(`✅ API:      http://127.0.0.1:${PORT}/api/health | mode=${mode}`)
+  if (frontendReady) console.log(`🌐 Website:  http://127.0.0.1:${PORT}`)
+  else console.log('⚠️ Frontend chưa build. Chạy npm run build rồi khởi động lại.')
+})
+
+server.on('error', (err) => {
+  if (err?.code === 'EADDRINUSE') {
+    console.error(`❌ Cổng ${PORT} đang được một chương trình khác sử dụng.`)
+    console.error('   Hãy đóng cửa sổ project cũ hoặc chạy STOP_PROJECT.bat rồi thử lại.')
+    process.exit(1)
+  }
+  throw err
 })

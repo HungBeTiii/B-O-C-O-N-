@@ -14,6 +14,9 @@ import AdminOrderDetailPage from './pages/AdminOrderDetailPage'
 import AdminProductsPage from './pages/AdminProductsPage'
 import AdminCategoriesPage from './pages/AdminCategoriesPage'
 import NotFoundPage from './pages/NotFoundPage'
+import ReviewPage from './pages/ReviewPage'
+import AdminAddonsPage from './pages/AdminAddonsPage'
+import AdminReviewsPage from './pages/AdminReviewsPage'
 
 export default function App() {
   return <ErrorBoundary>
@@ -24,6 +27,7 @@ export default function App() {
           <Route path="/cart" element={<CartPage/>}/>
           <Route path="/checkout" element={<CheckoutPage/>}/>
           <Route path="/track" element={<TrackPage/>}/>
+          <Route path="/review" element={<ReviewPage/>}/>
           <Route path="/admin/login" element={<AdminLoginPage/>}/>
           <Route path="/admin" element={<ProtectedRoute><AdminLayout/></ProtectedRoute>}>
             <Route index element={<AdminDashboardPage/>}/>
@@ -31,6 +35,8 @@ export default function App() {
             <Route path="orders/:id" element={<AdminOrderDetailPage/>}/>
             <Route path="products" element={<AdminProductsPage/>}/>
             <Route path="categories" element={<AdminCategoriesPage/>}/>
+            <Route path="addons" element={<AdminAddonsPage/>}/>
+            <Route path="reviews" element={<AdminReviewsPage/>}/>
           </Route>
           <Route path="/admin/*" element={<Navigate to="/admin" replace/>}/>
           <Route path="*" element={<NotFoundPage/>}/>

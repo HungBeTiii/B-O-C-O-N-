@@ -4,9 +4,12 @@
   "version": "2.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -k -n API,WEB \"npm:dev:server\" \"npm:dev:client\"",
-    "dev:server": "node --watch server/index.js",
+    "dev": "npm run build && node server/index.js",
+    "dev:hot": "concurrently -k -n API,WEB \"npm:dev:server:watch\" \"npm:dev:client\"",
+    "dev:server": "node server/index.js",
+    "dev:server:watch": "node --watch server/index.js",
     "dev:client": "vite --host 127.0.0.1 --port 5174",
+    "check": "tsc --noEmit",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 127.0.0.1 --port 4174",
     "start": "node server/index.js"

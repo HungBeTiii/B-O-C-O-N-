@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useLocation, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import CustomerHeader from '../components/CustomerHeader'
 import { api } from '../lib/api'
 import type { Order } from '../lib/types'
@@ -47,6 +47,7 @@ export default function TrackPage() {
         <div className="flex flex-wrap items-center justify-between gap-3"><div><div className="text-sm text-slate-500">Mã đơn</div><div className="text-xl font-black">{order.orderCode}</div></div><div className={`rounded-full px-4 py-2 font-black ${order.orderStatus === 'Đã hủy' ? 'bg-red-50 text-red-600' : 'bg-orange-50 text-orange-600'}`}>{order.orderStatus}</div></div>
         {order.orderStatus === 'Đã hủy' ? <div className="mt-6 rounded-xl bg-red-50 p-4 text-red-700">Đơn hàng đã bị hủy.</div> : <div className="mt-7 grid gap-3">{statuses.map((status, index) => <div key={status} className="flex items-center gap-3"><div className={`h-4 w-4 rounded-full ${index <= currentIndex ? 'bg-orange-600' : 'bg-slate-200'}`}/><span className={index <= currentIndex ? 'font-bold' : 'text-slate-400'}>{status}</span></div>)}</div>}
         <div className="mt-7 border-t pt-5"><div className="flex justify-between gap-4"><span className="text-slate-500">Khách hàng</span><b>{order.customerName}</b></div><div className="mt-2 flex justify-between gap-4"><span className="text-slate-500">Địa chỉ</span><b className="text-right">{order.address}</b></div><div className="mt-2 flex justify-between"><span className="text-slate-500">Tổng tiền</span><b>{Number(order.totalPrice || 0).toLocaleString('vi-VN')}đ</b></div></div>
+        {order.orderStatus === 'Hoàn thành' && <Link to={`/review?code=${encodeURIComponent(order.orderCode)}`} className="mt-5 block rounded-xl bg-amber-500 py-3 text-center font-black text-white hover:bg-amber-600">Đánh giá đơn hàng</Link>}
       </div>}
     </main>
   </>
